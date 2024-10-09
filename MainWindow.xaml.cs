@@ -51,10 +51,10 @@ namespace ModbusGenerator
             modbusClient.Port = 502;
             modbusClient.Connect();
 
-            timerPollRead.Interval = TimeSpan.FromMilliseconds(1000);
+            timerPollRead.Interval = TimeSpan.FromMilliseconds(5000);
             timerPollRead.Tick += TimerPollRead_Tick;
 
-            timerPollWrite.Interval = TimeSpan.FromMilliseconds(1000);
+            timerPollWrite.Interval = TimeSpan.FromMilliseconds(5000);
             timerPollWrite.Tick += TimerPollWrite_Tick;
 
             timerPollWrite.Start();
@@ -70,11 +70,11 @@ namespace ModbusGenerator
                     int[] vals = modbusClient.ReadHoldingRegisters(0, 4);
                     //Console.WriteLine($"vals[0]: {vals[0]} ,vals[1]:{vals[1]}");
 
-                    int powerEnergy = vals[1] << 16 | vals[0];
-                    int prodCapture = vals[3] << 16 | vals[2];
+                    int powerEnergy = vals[0] << 16 | vals[1];
+                    int prodCapture = vals[2] << 16 | vals[3];
                     //gauge1.Value = powerEnergy;
-                    lbPowerEnergy.Content = $"Power energy (kw-h) : {powerEnergy.ToString()}";
-                    lbProdCapture.Content = $"Production capture  : {prodCapture.ToString()}";
+                    lbPowerEnergy.Content = $"Power energy (kw-h) : {powerEnergy.ToString()} [int32]";
+                    lbProdCapture.Content = $"Production capture  : {prodCapture.ToString()} [int32]";
 
 
                     chart1.Values.Add(powerEnergy);
@@ -126,11 +126,11 @@ namespace ModbusGenerator
 
             short ival = short.Parse("15");
             ModbusServer.HoldingRegisters regs = modbusServer.holdingRegisters;
-            regs[1] = firstHalf;
-            regs[2] = secondHalf;
+            regs[2] = firstHalf;
+            regs[1] = secondHalf;
 
-            regs[3] = firstHalf1;
-            regs[4] = secondHalf1;
+            regs[4] = firstHalf1;
+            regs[3] = secondHalf1;
 
         }
 
