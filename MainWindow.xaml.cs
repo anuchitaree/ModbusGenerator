@@ -1,9 +1,11 @@
 ﻿using EasyModbus;
+using LiveCharts;
 using LiveCharts.Wpf;
 using System;
-using System.Net;
 using System.Threading;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace ModbusGenerator
@@ -22,9 +24,19 @@ namespace ModbusGenerator
         int powerEnergy = 0;
         int prodCapture = 0;
 
+        public ChartValues<double> Values1 { get; set; }
+        public ChartValues<double> Values2 { get; set; }
+
+
         public MainWindow()
         {
             InitializeComponent();
+
+            chart1.Values = new ChartValues<int>();
+            chart2.Values = new ChartValues<int>();
+
+
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -32,39 +44,65 @@ namespace ModbusGenerator
 
             modbusServer = new ModbusServer();
             modbusServer.Listen();
-            
+
             Thread.Sleep(1000);
 
             modbusClient.IPAddress = "127.0.0.1";
             modbusClient.Port = 502;
             modbusClient.Connect();
 
-            timerPollRead.Interval = TimeSpan.FromSeconds(1);
+            timerPollRead.Interval = TimeSpan.FromMilliseconds(1000);
             timerPollRead.Tick += TimerPollRead_Tick;
 
-            timerPollWrite.Interval = TimeSpan.FromSeconds(1);
+            timerPollWrite.Interval = TimeSpan.FromMilliseconds(1000);
             timerPollWrite.Tick += TimerPollWrite_Tick;
 
-            timerPollRead.Start();
             timerPollWrite.Start();
+            timerPollRead.Start();
         }
 
         private void TimerPollRead_Tick(object sender, EventArgs e)
         {
-            if (modbusClient.Connected == true)
+            try
             {
-                int[] vals = modbusClient.ReadHoldingRegisters(0, 4);
-                Console.WriteLine($"vals[0]: {vals[0]} ,vals[1]:{vals[1]}");
+                if (modbusClient.Connected == true)
+                {
+                    int[] vals = modbusClient.ReadHoldingRegisters(0, 4);
+                    //Console.WriteLine($"vals[0]: {vals[0]} ,vals[1]:{vals[1]}");
 
-                int powerEnergy = vals[1] << 16 | vals[0];
-                int prodCapture = vals[3] << 16 | vals[2];
+                    int powerEnergy = vals[1] << 16 | vals[0];
+                    int prodCapture = vals[3] << 16 | vals[2];
+                    //gauge1.Value = powerEnergy;
+                    lbPowerEnergy.Content = $"Power energy (kw-h) : {powerEnergy.ToString()}";
+                    lbProdCapture.Content = $"Production capture  : {prodCapture.ToString()}";
 
 
-                gauge1.Value = powerEnergy;
+                    chart1.Values.Add(powerEnergy);
+                    chart2.Values.Add(prodCapture);
 
+
+                   var len = chart1.Values.Count;
+                    if(chart1.Values.Count > 10)
+                    {
+                        chart1.Values.RemoveAt(0);
+                        chart2.Values.RemoveAt(0);
+                    }
+
+
+                   
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                ex.ToString();
             }
         }
 
+     
 
         private void TimerPollWrite_Tick(object sender, EventArgs e)
         {
@@ -74,7 +112,7 @@ namespace ModbusGenerator
             //regs[2] = ival;
 
             Random rnd = new Random();
-            int energy = rnd.Next(1,3);
+            int energy = rnd.Next(1, 3);
             powerEnergy = powerEnergy + energy;
             byte[] bytes = BitConverter.GetBytes(powerEnergy);
             short firstHalf = BitConverter.ToInt16(bytes, 0);
@@ -96,7 +134,11 @@ namespace ModbusGenerator
 
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            timerPollWrite.Stop();
+            timerPollRead.Stop();
 
-
+        }
     }
 }
