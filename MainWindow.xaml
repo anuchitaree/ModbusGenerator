@@ -7,7 +7,7 @@
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:local="clr-namespace:ModbusGenerator"
         mc:Ignorable="d"
-        Title="Energy Generator by Modbus" Height="320" Width="300" Loaded="Window_Loaded" ResizeMode="CanMinimize" Closed="Window_Closed">
+        Title="Energy Generator by Modbus" Height="320" Width="400" Loaded="Window_Loaded" ResizeMode="CanMinimize" Closed="Window_Closed">
     <Grid Margin="-1,10,0,14" RenderTransformOrigin="0.5,0.5">
         <Grid.RowDefinitions>
             <RowDefinition Height="185*"/>
@@ -38,9 +38,9 @@
 
 
 
-        <Label Content="Label" Name="lbPowerEnergy" HorizontalAlignment="Left" Margin="0,16,0,0" VerticalAlignment="Top" Height="35" Width="301" FontSize="16" Grid.ColumnSpan="2"/>
+        <Label Content="Label" Name="lbPowerEnergy" HorizontalAlignment="Left" Margin="0,16,0,0" VerticalAlignment="Top" Height="35" Width="401" FontSize="16" Grid.ColumnSpan="2"/>
 
-        <Label Content="Label" Name="lbProdCapture" HorizontalAlignment="Left" Margin="0,78,0,0" VerticalAlignment="Top" Height="29" Width="301" FontSize="16" Grid.ColumnSpan="2"/>
+        <Label Content="Label" Name="lbProdCapture" HorizontalAlignment="Left" Margin="0,78,0,0" VerticalAlignment="Top" Height="29" Width="401" FontSize="16" Grid.ColumnSpan="2"/>
         <Label Content="Holding Register 400 000" HorizontalAlignment="Left" Margin="0,-10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <Label Content="Holding Register 400 002" HorizontalAlignment="Left" Margin="0,60,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
 
